@@ -2,7 +2,7 @@
 
 Huấn luyện Random Forest và MLP để dự đoán đa nhãn ADR từ SMILES. Morgan fingerprint biểu diễn phân tử bằng 2.048 bit, radius 2 và giữ thông tin lập thể. Dữ liệu chạy mặc định là SIDER do DeepChem phân phối, gồm 27 nhóm nhãn.
 
-## Bản chạy đã bàn giao
+## Bản chạy đã thực hiện
 
 Đã tải SIDER qua script download, lọc 1.427 phân tử và tạo cả random_42 (1.141/142/144) lẫn scaffold_42 (1.141/143/143). Scaffold_42 có số scaffold giao nhau bằng 0 giữa từng cặp tập. Khi dùng dữ liệu đi kèm, bắt đầu từ mục Train; các bước tải/lọc/chia phục vụ tái tạo dữ liệu trong thư mục output mới.
 
