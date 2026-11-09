@@ -1,0 +1,6 @@
+{
+  "url": "https://deepchemdata.s3-us-west-1.amazonaws.com/datasets/sider.csv.gz",
+  "downloaded_at_utc": "2026-11-06T08:05:10.127587+00:00",
+  "archive_sha256": "4cc7ccb20dded475853c583596e227116c222c6ca7dbb40159bdbe9ee3f099b9",
+  "csv_sha256": "71efc6ac4ca82d6545bc512509863281be0f17234afd7adaf71a71899988302e"
+}

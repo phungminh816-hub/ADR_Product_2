@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+data/raw/*.csv
+data/raw/*.gz
+data/raw/*.part
+data/proceed/*.csv
+data/split/*/
+metric/*/
+data/raw/onsides/
+.adr-font-build*
