@@ -10,7 +10,7 @@ import pandas as pd
 from rdkit import Chem
 from rdkit.Chem.Scaffolds import MurckoScaffold
 
-ROOT = Path(__file__).resolve().parents[2]
+from data import DATASET_FOLDERS, ROOT
 
 
 def make_split(processed, output, strategy="scaffold", seed=42, train_ratio=.8, val_ratio=.1,
@@ -85,7 +85,9 @@ def make_split(processed, output, strategy="scaffold", seed=42, train_ratio=.8, 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--processed", type=Path, default=ROOT / "data/proceed/sider")
+    parser.add_argument("--dataset", choices=DATASET_FOLDERS, default="sider",
+                        help="Select input and output defaults (OnSIDES benchmark uses up to 100 labels)")
+    parser.add_argument("--processed", type=Path, help="Override the processed data directory")
     parser.add_argument("--strategy", choices=["random", "scaffold"], default="scaffold")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--train-ratio", type=float, default=.8)
@@ -93,9 +95,15 @@ def main():
     parser.add_argument("--output", type=Path)
     parser.add_argument("--max-labels", type=int, help="Keep most frequent labels using TRAIN counts only")
     args = parser.parse_args()
-    output = args.output or ROOT / f"data/split/{args.strategy}_{args.seed}"
-    make_split(args.processed, output, args.strategy, args.seed, args.train_ratio, args.val_ratio,
-               args.max_labels)
+    processed = args.processed or ROOT / "data/proceed" / args.dataset
+    name = f"{args.strategy}_{args.seed}"
+    max_labels = args.max_labels
+    if args.dataset == "onsides":
+        name = f"onsides_{args.seed}" if args.strategy == "scaffold" else f"onsides_{name}"
+        if max_labels is None:
+            max_labels = 100
+    output = args.output or ROOT / "data/split" / name
+    make_split(processed, output, args.strategy, args.seed, args.train_ratio, args.val_ratio, max_labels)
 
 
 if __name__ == "__main__":

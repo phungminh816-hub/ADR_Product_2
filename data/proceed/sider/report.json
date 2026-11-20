@@ -1,5 +1,5 @@
 {
-  "source": "D:\\HUST_20261\\Project1\\ADR_Product2\\data\\raw\\sider.csv",
+  "source": "data/raw/sider/sider.csv",
   "source_sha256": "71efc6ac4ca82d6545bc512509863281be0f17234afd7adaf71a71899988302e",
   "raw_rows": 1427,
   "processed_rows": 1427,

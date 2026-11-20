@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 from rdkit import Chem
 
-ROOT = Path(__file__).resolve().parents[2]
+from data import DATASET_FOLDERS, ROOT, source_path
 
 
 def prepare(source, output, label_columns=None):
@@ -20,6 +20,8 @@ def prepare(source, output, label_columns=None):
     labels = label_columns or [name for name in frame if name != "smiles"]
     if not labels or not set(labels).issubset(frame.columns):
         raise ValueError("No valid label columns.")
+    if len(labels) != len(set(labels)) or {"smiles", "drug_id"}.intersection(labels):
+        raise ValueError("Label names must be unique and distinct from smiles and drug_id.")
     for name in labels:
         observed = frame[name].dropna()
         if not observed.isin([0, 1]).all():
@@ -48,7 +50,7 @@ def prepare(source, output, label_columns=None):
     output.mkdir(parents=True, exist_ok=False)
     clean.to_csv(output / "processed.csv", index=False)
     (output / "labels.json").write_text(json.dumps(labels, indent=2), encoding="utf-8")
-    report = {"source": str(source.resolve()),
+    report = {"source": source_path(source),
               "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
               "raw_rows": len(frame), "processed_rows": len(clean), "labels": labels,
               "invalid_smiles": rejected, "merged_rows": len(valid) - len(clean),
@@ -60,18 +62,22 @@ def prepare(source, output, label_columns=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dataset", choices=["sider", "onsides"], default="sider")
+    parser.add_argument("--dataset", choices=DATASET_FOLDERS, default="sider")
     parser.add_argument("--input", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--labels", nargs="+", help="Explicit label columns for a CSV with metadata")
     parser.add_argument("--smiles-map", type=Path, help="Use an existing OnSIDES rxnorm_id/smiles mapping")
     args = parser.parse_args()
     if args.dataset == "onsides":
+        if args.labels:
+            parser.error("--labels applies to CSV inputs; OnSIDES builds labels from MedDRA terms.")
         from data.raw.onsides import prepare_onsides
-        raw = args.input or ROOT / "data/raw/onsides"
+        raw = args.input or ROOT / "data/raw" / DATASET_FOLDERS[args.dataset]
         prepare_onsides(raw, args.output or ROOT / "data/proceed/onsides", args.smiles_map)
     else:
-        prepare(args.input or ROOT / "data/raw/sider.csv",
+        if args.smiles_map:
+            parser.error("--smiles-map applies only to OnSIDES.")
+        prepare(args.input or ROOT / "data/raw/sider/sider.csv",
                 args.output or ROOT / "data/proceed/sider", args.labels)
 
 

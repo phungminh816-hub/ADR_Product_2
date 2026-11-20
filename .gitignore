@@ -4,8 +4,14 @@ __pycache__/
 data/raw/*.csv
 data/raw/*.gz
 data/raw/*.part
+data/raw/*/*.csv
+data/raw/*/*.gz
+data/raw/*/*.part
 data/proceed/*.csv
+data/proceed/*/*.csv
+data/proceed/onsides/
 data/split/*/
 metric/*/
+data/raw/onside/
 data/raw/onsides/
 .adr-font-build*

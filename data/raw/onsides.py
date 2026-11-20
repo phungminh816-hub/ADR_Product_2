@@ -14,6 +14,8 @@ from pathlib import Path
 import pandas as pd
 from rdkit import Chem
 
+from data import source_path
+
 VERSION = "v3.1.1"
 URL = f"https://github.com/tatonetti-lab/onsides/releases/download/{VERSION}/onsides-{VERSION}.zip"
 SHA256 = "7739c73336786c92e73ca383af92d3f2814caf5e94206e08475b86d5a5ec22b9"
@@ -48,7 +50,6 @@ def download(output, archive=None):
         scratch = Path(scratch)
         archive_path = Path(archive) if archive else scratch / "release.zip"
         if not archive:
-            print(f"Downloading {URL}", flush=True)
             request = urllib.request.Request(URL, headers={"User-Agent": "ADR_Product2/1.0"})
             with urllib.request.urlopen(request, timeout=120) as response, archive_path.open("wb") as out:
                 shutil.copyfileobj(response, out)
@@ -113,7 +114,6 @@ def map_smiles(raw):
                                    "retrieved_at_utc": datetime.now(timezone.utc).isoformat()}
             pd.DataFrame(cache.values()).to_csv(partial, index=False)
             partial.replace(target)
-            print(f"{len(cache)}/{len(ingredients)} {row.rxnorm_name}: {status}", flush=True)
             time.sleep(.35)
     finally:
         partial.unlink(missing_ok=True)
@@ -178,7 +178,7 @@ def prepare_onsides(raw, output, mapping=None):
         staged = Path(scratch) / "processed"
         prepare(source, staged, labels)
         report = json.loads((staged / "report.json").read_text(encoding="utf-8"))
-        report.update(source=str(raw.resolve()), dataset="onsides", mapping_sha256=sha256(mapping),
+        report.update(source=source_path(raw), dataset="onsides", mapping_sha256=sha256(mapping),
                       sources=["US"], section="AR", term_type="PT",
                       zero_means="association not recorded; not confirmed clinical absence")
         report["normalized_csv_sha256"] = report.pop("source_sha256")

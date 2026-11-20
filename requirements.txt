@@ -1,6 +1,14 @@
+# Data preparation and molecular fingerprints
 numpy
 pandas
-scikit-learn
 rdkit
-torch
+
+# Model training, evaluation and checkpoints
+scikit-learn
+scipy
+xgboost>=2.1,<4
 joblib
+
+# Result plots
+matplotlib
+seaborn
